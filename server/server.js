@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import express from "express";
 import { Server } from "socket.io";
+import { SocketAddress } from "net";
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -17,6 +18,12 @@ io.on("connection", (socket) => {
     "my-broadcast",
     `A new user has joined the chat userId: ${socket.id}`
   );
+
+  socket.on("message-sent", (message,userId) => {
+    console.log(message);
+    
+    socket.to(userId).emit("received", message);
+  });
 });
 
 server.listen(3000, () => {
